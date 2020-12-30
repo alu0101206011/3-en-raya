@@ -1,34 +1,35 @@
-% https://courses.cs.washington.edu/courses/cse341/03sp/slides/PrologEx/tictactoe.pl.txt
 play :- menu(Board, Difficult), behavior(Board, Difficult).
 
 menu(Board, Difficult) :-
-  write('You play X by entering integer positions followed by a period.'),
-  nl,
-  write('Which difficult do you want? [I]mposible, [N]ormal.'),
-  read(Difficult),  % Ponerla entre comillas simples
-  difficult(Difficult),
-  writetable([1,2,3,4,5,6,7,8,9]),
-  write('Do you want to be the first? Put 0 or 1 to choose.'),
+  write('You play X by entering integer positions followed by a period.'), nl,
+  selectdifficult(Difficult),
+  writeboard([1,2,3,4,5,6,7,8,9]),
+  write('Put 0 if you want the AI to start or 1 if you want to start yourself.'),
   read(N),
   firstturn(N, Board, Difficult).
+
+selectdifficult(Difficult) :-
+  write('Which difficult do you want? [I]mposible, [N]ormal.'),
+  read(Difficult),  % Put in single quotes
+  difficult(Difficult).
 
 difficult('I') :- write('Now you are in impossible mode.'), nl, nl.
 difficult('N') :- write('Now you are in normal mode.'), nl, nl.
 difficult(_) :-
-  write('Difficult selection is not valid.'),
-  nl, 
+  write('Difficult selection is not valid.'), nl, 
   read(D),
   difficult(D).
 
+turnplayer(x,o).
+turnplayer(o,x).
+
 firstturn(0, Board, Difficult) :-
-  write('Empieza la IA.'),
-  nl,
+  write('AI start.'), nl,
   respond([b,b,b,b,b,b,b,b,b], Board,o,Difficult),
-  writetable(Board).
-  
+  writeboard(Board).
+
 firstturn(1, Board, _) :-
-   write('Tú empiezas.'),
-   nl,
+   write('You start.'), nl,
    Board = [b,b,b,b,b,b,b,b,b].
 
 firstturn(_,Board, _) :- 
@@ -38,33 +39,37 @@ firstturn(_,Board, _) :-
 
 behavior(Board, _) :- win(Board, x), write('You win!').
 behavior(Board, _) :- win(Board, o), write('I win!').
-behavior(Board, _) :- not(member(b,Board)), write(''), nl.
-behavior(Board, Difficult) :- read(N),
+behavior(Board, _) :- not(member(b,Board)), write('It\'s a draw!'), nl.
+behavior(Board, Difficult) :- 
+  writeboard(Board),
+  read(N),
   (  move(Board, x, PlayerBoard, N) ;  retrymove(Board, PlayerBoard) ),
-  writetable(PlayerBoard),
+  writeboard(PlayerBoard),
   respond(PlayerBoard, IABoard, o, Difficult), % always respond IA
-  writetable(IABoard),
   behavior(IABoard, Difficult).
 
-retrymove(Board, PlayerBoard) :- 
+retrymove(Board, PlayerBoard) :-
   write('Illegal move. Please, try again:'), nl,
   read(N),
   (  move(Board, x, PlayerBoard, N) ;  retrymove(Board, PlayerBoard) ).
 
 
-% Helping predicate for alternating play in a "self" game:
-selfgame :- game([b,b,b,b,b,b,b,b,b],x). 
+% AI vs AI game
+selfgame :- 
+  write('You are in AI vs AI mode.'),
+  selectdifficult(Difficult), 
+  game([b,b,b,b,b,b,b,b,b],x,Difficult).
 
-turnplayer(x,o).
-turnplayer(o,x).
-
-game(Board, Player) :- win(Board, Player), !, write([player, Player, wins]).
-game(Board, Player) :-
+game(Board, Player,_) :- win(Board, Player), !, write([player, Player, wins]).
+game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw!'), nl.
+game(Board, Player,Difficult) :-
   turnplayer(Player,Otherplayer),
   respond(Board,NewBoard,Player,Difficult),
-  writetable(NewBoard),
-  game(NewBoard,Otherplayer).
+  writeboard(NewBoard),
+  game(NewBoard,Otherplayer,Difficult).
 
+
+% Ways to win the game
 win(Board, Player) :- rowwin(Board, Player).
 win(Board, Player) :- colwin(Board, Player).
 win(Board, Player) :- diagwin(Board, Player).
@@ -80,6 +85,8 @@ colwin(Board, Player) :- Board = [_,_,Player,_,_,Player,_,_,Player].
 diagwin(Board, Player) :- Board = [Player,_,_,_,Player,_,_,_,Player].
 diagwin(Board, Player) :- Board = [_,_,Player,_,Player,_,Player,_,_].
 
+
+% Movements in the board
 move([b,B,C,D,E,F,G,H,I], Player, [Player,B,C,D,E,F,G,H,I], 1).
 move([A,b,C,D,E,F,G,H,I], Player, [A,Player,C,D,E,F,G,H,I], 2).
 move([A,B,b,D,E,F,G,H,I], Player, [A,B,Player,D,E,F,G,H,I], 3).
@@ -90,29 +97,34 @@ move([A,B,C,D,E,F,b,H,I], Player, [A,B,C,D,E,F,Player,H,I], 7).
 move([A,B,C,D,E,F,G,b,I], Player, [A,B,C,D,E,F,G,Player,I], 8).
 move([A,B,C,D,E,F,G,H,b], Player, [A,B,C,D,E,F,G,H,Player], 9).
 
-writetable([A,B,C,D,E,F,G,H,I]) :- write([A,B,C]),nl,write([D,E,F]),nl,
- write([G,H,I]),nl,nl.
+writeboard([A,B,C,D,E,F,G,H,I]) :- 
+  write([A,B,C]),nl,
+  write([D,E,F]),nl,
+  write([G,H,I]),nl,nl.
 
-% Predicates to support playing a with the user:
-opponentwinsnext(Board, Position) :- move(Board, x, PlayerBoard, Position), win(PlayerBoard, x).
-xgame(Board, Player) :-     
+opponentwinsnext(Board, Position, Player) :- 
+  turnplayer(Player, Oponent),
+  move(Board, Oponent, PlayerBoard, Position),
+  win(PlayerBoard, Oponent).
+
+xgame(Board, Player) :-
   turnplayer(Player,Oponent),
   (   move(Board, Player, PlayerBoard, 1),
-  move(Board, Oponent, PlayerBoard, 9);
-  move(Board, Oponent, PlayerBoard, 3),
-  move(Board, Oponent, PlayerBoard, 7) ).
+      move(Board, Oponent, PlayerBoard, 9);
+      move(Board, Oponent, PlayerBoard, 3),
+      move(Board, Oponent, PlayerBoard, 7)).
 
-% Prueba todos los movimientos a ver si puede ganar con alguna posición
+% Answer of AI
 respond(Board,PlayerBoard,Player, _) :- 
   move(Board, Player, PlayerBoard,_),
   win(PlayerBoard, Player), !.
 respond(Board,PlayerBoard,Player, _) :-
-  opponentwinsnext(Board, Position),
+  opponentwinsnext(Board, Position, Player),
   move(Board, Player, PlayerBoard, Position).
 respond(Board,PlayerBoard,Player, 'I') :-
-  xgame(Board, Player) :-
+  xgame(Board, Player),
   priority2(Board, Player, PlayerBoard, N),	
-	move(Board, Player, PlayerBoard,N).
+  move(Board, Player, PlayerBoard,N).
 respond(Board,PlayerBoard,Player, 'I') :-
   priority1(Board, Player, PlayerBoard, N),
   move(Board, Player, PlayerBoard,N).
@@ -123,6 +135,7 @@ respond(Board,PlayerBoard,Player, _) :-
   Board = PlayerBoard,
   Player = Player.
 
+% Differents priorities for impossible mode.
 priority1(Board, Player, PlayerBoard, N):- 
   move(Board, Player, PlayerBoard, 5), N=5;
   move(Board, Player, PlayerBoard, 1), N=1;

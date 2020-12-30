@@ -1,0 +1,11 @@
+Dificultades encontradas
+
+La forma en la que hay que pensar para crear algún programa en prolog me dificultó la elección del dominio de aplicación ya que no quería adentrarme en un trabajo demasiado costoso
+pero tampoco quería hacer una entrega que no estuviera a la altura de lo que se espera.
+Revisando la teoria de la asignatura se me ocurrió hacerlo sobre el famoso juego del 3 en raya. Comencé a revisar múltiples códigos en github y a ir ejecutandolos paso a paso, para 
+llegar a comprenderlos al 100% y en base a estos fui poco a poco construyendo la estructura del código, aumentando elecciones, mejorando funcionalidades y la manera de actuar automática
+del otro jugador.
+
+Elección de dificultad en el juego
+Después de múltiples partidas jugando al 3 en raya de google, me percaté de que la diferencia entre el nivel medio y el imposible es que si priorizas las esquinas y el centro, minimizas la cantidad 
+de jugadas que pueden que dan a llegar a solución doble del contrario y maximizas las tuyas (El jugador gana si o si en el siguiente movimiento)

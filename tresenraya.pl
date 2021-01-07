@@ -25,7 +25,7 @@ turnplayer(o,x).
 
 firstturn(0, Board, Difficult) :-
   write('AI start.'), nl,
-  respond([b,b,b,b,b,b,b,b,b], Board,o,Difficult),
+  answer([b,b,b,b,b,b,b,b,b], Board,o,Difficult),
   writeboard(Board).
 
 firstturn(1, Board, _) :-
@@ -45,8 +45,8 @@ behavior(Board, Difficult) :-
   read(N),
   (  move(Board, x, PlayerBoard, N) ;  retrymove(Board, PlayerBoard) ),
   writeboard(PlayerBoard),
-  respond(PlayerBoard, IABoard, o, Difficult), % always respond IA
-  behavior(IABoard, Difficult).
+  answer(PlayerBoard, AIBoard, o, Difficult), % always answer AI
+  behavior(AIBoard, Difficult).
 
 retrymove(Board, PlayerBoard) :-
   write('Illegal move. Please, try again:'), nl,
@@ -64,26 +64,20 @@ game(Board, Player,_) :- win(Board, Player), !, write([player, Player, wins]).
 game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw!'), nl.
 game(Board, Player,Difficult) :-
   turnplayer(Player,Otherplayer),
-  respond(Board,NewBoard,Player,Difficult),
+  answer(Board,NewBoard,Player,Difficult),
   writeboard(NewBoard),
   game(NewBoard,Otherplayer,Difficult).
 
 
 % Ways to win the game
-win(Board, Player) :- rowwin(Board, Player).
-win(Board, Player) :- colwin(Board, Player).
-win(Board, Player) :- diagwin(Board, Player).
-
-rowwin(Board, Player) :- Board = [Player,Player,Player,_,_,_,_,_,_].
-rowwin(Board, Player) :- Board = [_,_,_,Player,Player,Player,_,_,_].
-rowwin(Board, Player) :- Board = [_,_,_,_,_,_,Player,Player,Player].
-
-colwin(Board, Player) :- Board = [Player,_,_,Player,_,_,Player,_,_].
-colwin(Board, Player) :- Board = [_,Player,_,_,Player,_,_,Player,_].
-colwin(Board, Player) :- Board = [_,_,Player,_,_,Player,_,_,Player].
-
-diagwin(Board, Player) :- Board = [Player,_,_,_,Player,_,_,_,Player].
-diagwin(Board, Player) :- Board = [_,_,Player,_,Player,_,Player,_,_].
+win(Board, Player) :- Board = [Player,Player,Player,_,_,_,_,_,_].
+win(Board, Player) :- Board = [_,_,_,Player,Player,Player,_,_,_].
+win(Board, Player) :- Board = [_,_,_,_,_,_,Player,Player,Player].
+win(Board, Player) :- Board = [Player,_,_,_,Player,_,_,_,Player].
+win(Board, Player) :- Board = [_,_,Player,_,Player,_,Player,_,_].
+win(Board, Player) :- Board = [Player,_,_,Player,_,_,Player,_,_].
+win(Board, Player) :- Board = [_,Player,_,_,Player,_,_,Player,_].
+win(Board, Player) :- Board = [_,_,Player,_,_,Player,_,_,Player].
 
 
 % Movements in the board
@@ -115,22 +109,22 @@ xgame(Board, Player) :-
       move(Board, Oponent, PlayerBoard, 7)).
 
 % Answer of AI
-respond(Board,PlayerBoard,Player, _) :- 
+answer(Board,PlayerBoard,Player, _) :- 
   move(Board, Player, PlayerBoard,_),
   win(PlayerBoard, Player), !.
-respond(Board,PlayerBoard,Player, _) :-
+answer(Board,PlayerBoard,Player, _) :-
   opponentwinsnext(Board, Position, Player),
   move(Board, Player, PlayerBoard, Position).
-respond(Board,PlayerBoard,Player, 'I') :-
+answer(Board,PlayerBoard,Player, 'I') :-
   xgame(Board, Player),
   priority2(Board, Player, PlayerBoard, N),	
   move(Board, Player, PlayerBoard,N).
-respond(Board,PlayerBoard,Player, 'I') :-
+answer(Board,PlayerBoard,Player, 'I') :-
   priority1(Board, Player, PlayerBoard, N),
   move(Board, Player, PlayerBoard,N).
-respond(Board,PlayerBoard,Player, _) :-
+answer(Board,PlayerBoard,Player, _) :-
   move(Board, Player, PlayerBoard,_).
-respond(Board,PlayerBoard,Player, _) :-
+answer(Board,PlayerBoard,Player, _) :-
   not(member(b,Board)),
   Board = PlayerBoard,
   Player = Player.

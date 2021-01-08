@@ -9,7 +9,8 @@ menu(Board, Difficult) :-
   firstturn(N, Board, Difficult).
 
 selectdifficult(Difficult) :-
-  write('Which difficult do you want? [I]mposible, [N]ormal.'),
+  write('Which difficult do you want? [I]mposible, [N]ormal.'),nl,
+  write('Write I or N in single quotes.'),
   read(Difficult),  % Put in single quotes
   difficult(Difficult).
 

@@ -1,7 +1,7 @@
 play :- menu(Board, Difficult), behavior(Board, Difficult).
 
 menu(Board, Difficult) :-
-  write('You play X by entering integer positions followed by a period.'), nl,
+  write('You play X.'), nl,
   selectdifficult(Difficult),
   writeboard([1,2,3,4,5,6,7,8,9]),
   write('Put 0 if you want the AI to start or 1 if you want to start yourself.'),
@@ -25,8 +25,7 @@ turnplayer(o,x).
 
 firstturn(0, Board, Difficult) :-
   write('AI start.'), nl,
-  answer([b,b,b,b,b,b,b,b,b], Board,o,Difficult),
-  writeboard(Board).
+  answer([b,b,b,b,b,b,b,b,b], Board,o,Difficult).
 
 firstturn(1, Board, _) :-
    write('You start.'), nl,

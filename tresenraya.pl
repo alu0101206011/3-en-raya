@@ -112,12 +112,15 @@ opponentwinsnext(Board, Position, Player) :-
   move(Board, Oponent, PlayerBoard, Position),
   win(PlayerBoard, Oponent).
 
-xgame(Board, Player) :-
+xgame(Board, Player, N) :-
   turnplayer(Player,Oponent),
-  (   move(_, Oponent, Board, 1),
-      move(_, Oponent, Board, 9);
-      move(_, Oponent, Board, 3),
-      move(_, Oponent, Board, 7)).
+   (   move(_, Oponent, Board, 1),
+   (   move(_, Oponent, Board, 9), N=2 ; move(_, Oponent, Board, 8), N=4 );
+   move(_, Oponent, Board, 3),
+   (   move(_, Oponent, Board, 7), N=2; move(_, Oponent, Board, 8), N=6 );
+    move(_, Oponent, Board, 7),
+    move(_, Oponent, Board, 6), N=8).
+   
 
 % Answer of AI
 answer(Board,PlayerBoard,Player, _) :- 
@@ -127,8 +130,8 @@ answer(Board,PlayerBoard,Player, _) :-
   opponentwinsnext(Board, Position, Player),
   move(Board, Player, PlayerBoard, Position).
 answer(Board,PlayerBoard,Player, 'I') :-
-  xgame(Board, Player),
-  priority2(Board, Player, PlayerBoard).
+  xgame(Board, Player, N),
+  priority2(Board, Player, PlayerBoard, N).
 answer(Board,PlayerBoard,Player, 'I') :-
   priority1(Board, Player, PlayerBoard).
 answer(Board,PlayerBoard,Player, _) :-
@@ -146,8 +149,5 @@ priority1(Board, Player, PlayerBoard):-
   move(Board, Player, PlayerBoard, 7);
   move(Board, Player, PlayerBoard, 9).
 
-priority2(Board, Player, PlayerBoard):- 
-  move(Board, Player, PlayerBoard, 2);
-  move(Board, Player, PlayerBoard, 4);
-  move(Board, Player, PlayerBoard, 6);
-  move(Board, Player, PlayerBoard, 8).
+priority2(Board, Player, PlayerBoard, N):- 
+  move(Board, Player, PlayerBoard, N).

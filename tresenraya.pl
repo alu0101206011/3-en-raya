@@ -1,4 +1,4 @@
-play :- menu(Board, Difficult), behavior(Board, Difficult).
+play :- menu(Board, Difficult), behavior(Board, Difficult), !.
 
 menu(Board, Difficult) :-
   write('You play X.'), nl,
@@ -60,7 +60,7 @@ selfgame :-
   selectdifficult(Difficult), 
   game([b,b,b,b,b,b,b,b,b],x,Difficult).
 
-game(Board, Player,_) :- win(Board, Player), !, write([player, Player, wins]).
+game(Board, Player,_) :- win(Board, Player), write([player, Player, wins]).
 game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw!'), nl.
 game(Board, Player,Difficult) :-
   turnplayer(Player,Otherplayer),

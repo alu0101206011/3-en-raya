@@ -131,7 +131,7 @@ answer(Board,PlayerBoard,Player, _) :-
   move(Board, Player, PlayerBoard, Position).
 answer(Board,PlayerBoard,Player, 'I') :-
   xgame(Board, Player, N),
-  priority2(Board, Player, PlayerBoard, N).
+  move(Board, Player, PlayerBoard, N).
 answer(Board,PlayerBoard,Player, 'I') :-
   priority1(Board, Player, PlayerBoard).
 answer(Board,PlayerBoard,Player, _) :-
@@ -148,6 +148,3 @@ priority1(Board, Player, PlayerBoard):-
   move(Board, Player, PlayerBoard, 3);
   move(Board, Player, PlayerBoard, 7);
   move(Board, Player, PlayerBoard, 9).
-
-priority2(Board, Player, PlayerBoard, N):- 
-  move(Board, Player, PlayerBoard, N).

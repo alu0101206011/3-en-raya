@@ -9,7 +9,7 @@ menu(Board, Difficult) :-
   writeboard([1,2,3,4,5,6,7,8,9]).
 
 selectdifficult(Difficult) :-
-  write('Which difficult do you want? [I]mposible, [N]ormal.'),nl,
+  write('Which difficult do you want? [I]mposible, [N]ormal.'), nl,
   write('Write I or N in single quotes.'),
   read(Difficult),  % Put in single quotes
   difficult(Difficult).
@@ -37,16 +37,16 @@ firstturn(_, Board, _) :-
   read(N),
   firstturn(N,Board,_).
 
-behavior(Board, _) :- win(Board, x), write('You win!').
+behavior(Board, _) :- win(Board, x), write('You win.').
 behavior(Board, _) :- 
   win(Board, o), 
   writeboard(Board),
-  write('I win!').
+  write('I win.').
 behavior(Board, _) :- 
   not(member(b,Board)), 
-  write('Final result'), nl, nl,
+  write('Final result.'), nl, nl,
   writeboard(Board),
-  write('It\'s a draw!'), nl.
+  write('It\'s a draw.'), nl.
 behavior(Board, Difficult) :- 
   writeboard(Board),
   read(N),
@@ -67,8 +67,12 @@ selfgame :-
   selectdifficult(Difficult), 
   game([b,b,b,b,b,b,b,b,b],x,Difficult), !.
 
-game(Board, Player,_) :- win(Board, Player), write([player, Player, wins]).
-game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw!'), nl.
+game(Board, Player,_) :- 
+  win(Board, Player), 
+  write('Player "'), 
+  write(Player), 
+  write('" wins.').
+game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw.'), nl.
 game(Board, Player,Difficult) :-
   turnplayer(Player,Otherplayer),
   answer(Board,NewBoard,Player,Difficult),

@@ -114,10 +114,10 @@ opponentwinsnext(Board, Position, Player) :-
 
 xgame(Board, Player, N) :-
   turnplayer(Player,Oponent),
-   (   move(_, Oponent, Board, 1),
-   (   move(_, Oponent, Board, 9), N=2 ; move(_, Oponent, Board, 8), N=4 );
+   (  move(_, Oponent, Board, 1),
+   (  move(_, Oponent, Board, 9), N=2 ; move(_, Oponent, Board, 8), N=4 );
    move(_, Oponent, Board, 3),
-   (   move(_, Oponent, Board, 7), N=2; move(_, Oponent, Board, 8), N=6 );
+   (  move(_, Oponent, Board, 7), N=2 ; move(_, Oponent, Board, 8), N=6 );
     move(_, Oponent, Board, 7),
     move(_, Oponent, Board, 6), N=8).
    

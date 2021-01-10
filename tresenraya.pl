@@ -3,10 +3,10 @@ play :- menu(Board, Difficult), behavior(Board, Difficult), !.
 menu(Board, Difficult) :-
   write('You play X.'), nl,
   selectdifficult(Difficult),
-  writeboard([1,2,3,4,5,6,7,8,9]),
   write('Put 0 if you want the AI to start or 1 if you want to start yourself.'),
   read(N),
-  firstturn(N, Board, Difficult).
+  firstturn(N, Board, Difficult),
+  writeboard([1,2,3,4,5,6,7,8,9]).
 
 selectdifficult(Difficult) :-
   write('Which difficult do you want? [I]mposible, [N]ormal.'),nl,
@@ -26,20 +26,27 @@ turnplayer(o,x).
 
 firstturn(0, Board, Difficult) :-
   write('AI start.'), nl,
-  answer([b,b,b,b,b,b,b,b,b], Board,o,Difficult).
+  answer([b,b,b,b,b,b,b,b,b], Board, o, Difficult).
 
 firstturn(1, Board, _) :-
    write('You start.'), nl,
    Board = [b,b,b,b,b,b,b,b,b].
 
-firstturn(_,Board, _) :- 
+firstturn(_, Board, _) :- 
   write('Turn selection is not valid.'),
   read(N),
   firstturn(N,Board,_).
 
 behavior(Board, _) :- win(Board, x), write('You win!').
-behavior(Board, _) :- win(Board, o), write('I win!').
-behavior(Board, _) :- not(member(b,Board)), write('It\'s a draw!'), nl.
+behavior(Board, _) :- 
+  win(Board, o), 
+  writeboard(Board),
+  write('I win!').
+behavior(Board, _) :- 
+  not(member(b,Board)), 
+  write('Final result'), nl, nl,
+  writeboard(Board),
+  write('It\'s a draw!'), nl.
 behavior(Board, Difficult) :- 
   writeboard(Board),
   read(N),
@@ -58,7 +65,7 @@ retrymove(Board, PlayerBoard) :-
 selfgame :- 
   write('You are in AI vs AI mode.'),
   selectdifficult(Difficult), 
-  game([b,b,b,b,b,b,b,b,b],x,Difficult).
+  game([b,b,b,b,b,b,b,b,b],x,Difficult), !.
 
 game(Board, Player,_) :- win(Board, Player), write([player, Player, wins]).
 game(Board,_,_) :- not(member(b,Board)), write('It\'s a draw!'), nl.
@@ -103,25 +110,23 @@ opponentwinsnext(Board, Position, Player) :-
 
 xgame(Board, Player) :-
   turnplayer(Player,Oponent),
-  (   move(Board, Player, PlayerBoard, 1),
-      move(Board, Oponent, PlayerBoard, 9);
-      move(Board, Oponent, PlayerBoard, 3),
-      move(Board, Oponent, PlayerBoard, 7)).
+  (   move(_, Oponent, Board, 1),
+      move(_, Oponent, Board, 9);
+      move(_, Oponent, Board, 3),
+      move(_, Oponent, Board, 7)).
 
 % Answer of AI
 answer(Board,PlayerBoard,Player, _) :- 
   move(Board, Player, PlayerBoard,_),
-  win(PlayerBoard, Player), !.
+  win(PlayerBoard, Player).
 answer(Board,PlayerBoard,Player, _) :-
   opponentwinsnext(Board, Position, Player),
   move(Board, Player, PlayerBoard, Position).
 answer(Board,PlayerBoard,Player, 'I') :-
   xgame(Board, Player),
-  priority2(Board, Player, PlayerBoard, N),	
-  move(Board, Player, PlayerBoard,N).
+  priority2(Board, Player, PlayerBoard).
 answer(Board,PlayerBoard,Player, 'I') :-
-  priority1(Board, Player, PlayerBoard, N),
-  move(Board, Player, PlayerBoard,N).
+  priority1(Board, Player, PlayerBoard).
 answer(Board,PlayerBoard,Player, _) :-
   move(Board, Player, PlayerBoard,_).
 answer(Board,PlayerBoard,Player, _) :-
@@ -130,15 +135,15 @@ answer(Board,PlayerBoard,Player, _) :-
   Player = Player.
 
 % Differents priorities for impossible mode.
-priority1(Board, Player, PlayerBoard, N):- 
-  move(Board, Player, PlayerBoard, 5), N=5;
-  move(Board, Player, PlayerBoard, 1), N=1;
-  move(Board, Player, PlayerBoard, 3), N=3;
-  move(Board, Player, PlayerBoard, 7), N=7;
-  move(Board, Player, PlayerBoard, 9), N=9.
+priority1(Board, Player, PlayerBoard):- 
+  move(Board, Player, PlayerBoard, 5);
+  move(Board, Player, PlayerBoard, 1);
+  move(Board, Player, PlayerBoard, 3);
+  move(Board, Player, PlayerBoard, 7);
+  move(Board, Player, PlayerBoard, 9).
 
-priority2(Board, Player, PlayerBoard, N):- 
-  move(Board, Player, PlayerBoard, 2), N=2;
-  move(Board, Player, PlayerBoard, 4), N=4;
-  move(Board, Player, PlayerBoard, 6), N=6;
-  move(Board, Player, PlayerBoard, 8), N=8.
+priority2(Board, Player, PlayerBoard):- 
+  move(Board, Player, PlayerBoard, 2);
+  move(Board, Player, PlayerBoard, 4);
+  move(Board, Player, PlayerBoard, 6);
+  move(Board, Player, PlayerBoard, 8).
